@@ -8,11 +8,11 @@
       "dm-mention-alert": "dm-mention-alert.js"
     }
   },
-  "keywords": ["node-red", "discord"],
-  "author": "",
+  "keywords": ["node-red", "discord", "mention", "alert", "dm"],
+  "author": "Casperac",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/Casperac/node-red-dm-mention-alert.git"
   }
 }
