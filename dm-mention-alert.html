@@ -1,0 +1,156 @@
+<script type="text/javascript">
+    RED.nodes.registerType('dm-mention-alert',{
+        category: 'social',
+        color: '#7CB342',
+        defaults: {
+            name: {value:""},
+            triggerType: {value:"user"},
+            triggerValue: {value:"", required:true},
+            recipientType: {value:"user"},
+            recipientValue: {value:""},
+            adminUserId: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "font-awesome/fa-bell",
+        label: function() {
+            return this.name || "DM Mention Alert";
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+            // Update UI based on trigger type
+            function updateTriggerUI() {
+                var type = $("#node-input-triggerType").val();
+                if (type === "user") {
+                    $("#trigger-value-label").text("User ID to Monitor");
+                    $("#node-input-triggerValue").attr("placeholder", "161944269370818560");
+                    $("#recipient-section").hide();
+                } else if (type === "role") {
+                    $("#trigger-value-label").text("Role ID to Monitor");
+                    $("#node-input-triggerValue").attr("placeholder", "1234567890123456789");
+                    $("#recipient-section").hide();
+                } else if (type === "word") {
+                    $("#trigger-value-label").text("Keyword/Phrase to Monitor");
+                    $("#node-input-triggerValue").attr("placeholder", "urgent");
+                    $("#recipient-section").show();
+                    updateRecipientUI();
+                }
+            }
+            
+            // Update recipient UI based on recipient type
+            function updateRecipientUI() {
+                var type = $("#node-input-recipientType").val();
+                if (type === "user") {
+                    $("#recipient-value-label").text("User ID");
+                    $("#node-input-recipientValue").attr("placeholder", "161944269370818560");
+                } else if (type === "role") {
+                    $("#recipient-value-label").text("Role ID");
+                    $("#node-input-recipientValue").attr("placeholder", "1234567890123456789");
+                }
+            }
+            
+            $("#node-input-triggerType").change(updateTriggerUI);
+            $("#node-input-recipientType").change(updateRecipientUI);
+            
+            // Initialize on load
+            updateTriggerUI();
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="dm-mention-alert">
+    <div class="form-row">
+        <label for="node-input-adminUserId"><i class="fa fa-shield"></i> Admin User ID</label>
+        <input type="text" id="node-input-adminUserId" placeholder="161944269370818560">
+        <div style="font-size: 11px; color: #999; margin-top: 3px;">
+            This user can manage role notification lists via Discord commands
+        </div>
+    </div>
+    
+    <div class="form-row" style="border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px;">
+        <label for="node-input-triggerType"><i class="fa fa-filter"></i> Trigger Type</label>
+        <select id="node-input-triggerType" style="width:70%">
+            <option value="user">User Mention</option>
+            <option value="role">Role Mention</option>
+            <option value="word">Keyword/Phrase</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-triggerValue"><i class="fa fa-search"></i> <span id="trigger-value-label">User ID to Monitor</span></label>
+        <input type="text" id="node-input-triggerValue" placeholder="161944269370818560">
+    </div>
+    
+    <div id="recipient-section">
+        <div class="form-row">
+            <label style="width:100%; border-top: 1px solid #ccc; padding-top:10px; margin-top:10px;">
+                <i class="fa fa-paper-plane"></i> <b>Send DM To:</b>
+            </label>
+        </div>
+        <div class="form-row">
+            <label for="node-input-recipientType"><i class="fa fa-users"></i> Recipient Type</label>
+            <select id="node-input-recipientType" style="width:70%">
+                <option value="user">Specific User</option>
+                <option value="role">Everyone with Role</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="node-input-recipientValue"><i class="fa fa-id-card"></i> <span id="recipient-value-label">User ID</span></label>
+            <input type="text" id="node-input-recipientValue" placeholder="161944269370818560">
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="My Mention Alert">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="dm-mention-alert">
+    <p>Detects mentions, role tags, or keywords in Discord messages and sends DM alerts.</p>
+    
+    <h3>Discord Commands (Admin Only)</h3>
+    <p>If you set an Admin User ID, that user can manage the notification list with these commands:</p>
+    <ul>
+        <li><code>!add-user &lt;userID&gt;</code> - Add a user to the notification list</li>
+        <li><code>!remove-user &lt;userID&gt;</code> - Remove a user from the notification list</li>
+        <li><code>!userid-list</code> - Show all users in the notification list with their names</li>
+        <li><code>!clear-user</code> - Clear ALL users from the notification list</li>
+    </ul>
+    <p><b>Note:</b> These commands only work when the node is configured for "Role Mention" trigger type.</p>
+    
+    <h3>Trigger Types</h3>
+    <dl class="message-properties">
+        <dt>User Mention</dt>
+        <dd>Monitors for when a specific user is @mentioned. The DM is sent to that mentioned user.</dd>
+        
+        <dt>Role Mention</dt>
+        <dd>Monitors for when a specific role is @mentioned. DMs are sent to all users in the managed list for that role.</dd>
+        
+        <dt>Keyword/Phrase</dt>
+        <dd>Monitors for a specific word or phrase in messages. You can choose to send the DM to a specific user OR everyone in a role's managed list.</dd>
+    </dl>
+
+    <h3>Configuration</h3>
+    <ul>
+        <li><b>Admin User ID:</b> Discord user ID who can manage role notification lists via commands</li>
+        <li><b>Trigger Type:</b> What to watch for (user mention, role mention, or keyword)</li>
+        <li><b>Trigger Value:</b> The user ID, role ID, or word to watch for</li>
+        <li><b>Recipient Type:</b> (Keyword only) Send to a specific user or everyone in a role list</li>
+        <li><b>Recipient Value:</b> (Keyword only) The user ID or role ID</li>
+    </ul>
+
+    <h3>Example Usage</h3>
+    <p><b>Setup:</b></p>
+    <ol>
+        <li>Set your Admin User ID in the node config</li>
+        <li>Create a Role Mention trigger with a role ID</li>
+        <li>In Discord, type: <code>!add-user 161944269370818560</code></li>
+        <li>Check the list: <code>!userid-list</code></li>
+        <li>When that role is mentioned, the user will get a DM!</li>
+    </ol>
+
+    <h3>Usage</h3>
+    <p>Connect: <code>discord-message</code> → <code>dm-mention-alert</code> → <code>discord-message-manager</code></p>
+</script>
