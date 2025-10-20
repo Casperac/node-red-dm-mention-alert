@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-dm-mention-alert",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Discord DM mention alert node for Node-RED",
   "main": "dm-mention-alert.js",
   "node-red": {
@@ -8,7 +8,13 @@
       "dm-mention-alert": "dm-mention-alert.js"
     }
   },
-  "keywords": ["node-red", "discord", "mention", "alert", "dm"],
+  "keywords": [
+    "node-red",
+    "discord",
+    "mention",
+    "alert",
+    "dm"
+  ],
   "author": "Casperac",
   "license": "MIT",
   "repository": {
