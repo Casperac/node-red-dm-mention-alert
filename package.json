@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-dm-mention-alert",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Discord DM mention alert node for Node-RED",
   "main": "dm-mention-alert.js",
   "node-red": {
